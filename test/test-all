@@ -1,0 +1,21 @@
+#!/bin/bash
+
+RET=0
+
+for item in *; do
+    if [[ ! -d "$item" ]]; then
+        continue
+    fi
+    echo "# testing:  $item"
+    ../rose2to3 "${item}/before.py" -wn -o "${item}/out" >/dev/null 2>&1
+    if ! diff "${item}/after.py" "${item}/out/before.py"; then
+        RET=$(( RET + 1 ))
+    fi
+done
+
+for item in */out; do
+    echo "# cleaning: $(dirname "${item}")"
+    rm -r "${item}"
+done
+
+exit $RET
